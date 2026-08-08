@@ -4,7 +4,7 @@ interface ArtworkResponse {
     data: Artwork;
 }
 export async function getArtworkById(id: number): Promise<Artwork> {
-    const response = await fetch(`https://api.artic.edu/api/v1/artworks/${id}`);
+    const response = await fetch(`https://api.artic.edu/api/v1/artworks/${id}?fields=id,title,artist_title,date_display,medium_display,artwork_type_title,dimensions,style_title,gallery_title,image_id`);
 
     if (!response.ok) {
         throw new Error(`No se pudo obtener la obra (${response.status})`);
