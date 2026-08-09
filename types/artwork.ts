@@ -1,12 +1,14 @@
 export interface Artwork {
-    id: number;
+    objectID: number;
     title: string;
-    artist_title: string | null;
-    date_display: string | null;
-    medium_display: string | null;
-    artwork_type_title: string | null;
+    artistDisplayName: string | null;
+    objectDate: string | null;
+    medium: string | null;
+    classification: string | null;
     dimensions: string | null;
-    style_title: string | null;
-    gallery_title: string | null;
-    image_id: string | null;
+    creditLine: string | null;
+    repository: string | null;
+    department: string | null;
+    primaryImage: string | null;
+    primaryImageSmall: string | null;
 }
