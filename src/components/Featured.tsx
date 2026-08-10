@@ -9,14 +9,16 @@ import { Card, SkeletonCard } from "./Card";
 
 export const Featured = (
     { type, value }:
-    { type: string, value: string | null }
+    { type: string, value?: string | null }
 ) => {
     const [artworks, setArtworks] = useState<Artwork[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const title: Record<string, string> = {
-        "artist": "Más obras del artista"
+        "artist": "Más obras del artista",
+        "featured": "Obras destacadas",
+        'favorites': 'Favoritos',
     }
 
     useEffect(() => {
@@ -68,7 +70,9 @@ export const Featured = (
                         id={artwork.objectID}
                         image={getArtworkImageUrl(artwork.primaryImageSmall) ?? "/Images/NotFound.jpeg"}
                         title={artwork.title}
-                        data={artwork.objectDate ?? "Fecha Desconocida"}
+                        author={artwork.artistDisplayName ?? "Artista Desconocido"}
+                        year={artwork.objectDate ?? "Fecha Desconocida"}
+                        technique={artwork.classification ?? null}
                     />
                 ))}
             </div>

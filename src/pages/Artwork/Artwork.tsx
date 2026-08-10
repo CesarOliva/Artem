@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Heart, Image, Share } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowLeft, Heart, Image, Share } from "lucide-react";
 
 import { getArtworkById, getArtworkImageUrl } from "../../../services/artApi";
 import type { Artwork } from "../../../types/artwork";
@@ -8,11 +9,9 @@ import type { Artwork } from "../../../types/artwork";
 import NotFound from "../../components/Error";
 import { Featured, SkeletonFeatured } from "../../components/Featured";
 
-const DEFAULT_ARTWORK_ID = 436535;
-
 export default function ArtworkPage() {
     const { id } = useParams();
-    const artworkId = Number(id ?? DEFAULT_ARTWORK_ID);
+    const artworkId = Number(id);
     const isValidArtworkId = Number.isInteger(artworkId) && artworkId > 0;
 
     const [artwork, setArtwork] = useState<Artwork | null>(null);
@@ -60,7 +59,9 @@ export default function ArtworkPage() {
         };
     }, [artworkId, isValidArtworkId]);
 
-    if (!isValidArtworkId || error) return ( <NotFound title="Obra No Encontrada" text="La obra que buscabas no fue encontrada." /> );
+    if (!isValidArtworkId) return ( <NotFound title="Obra No Encontrada" text="La obra que buscabas no fue encontrada." /> );
+
+    if (error) return ( <NotFound title="Error al mostrar la obra" text="La obra que deseas ver no pudo ser cargada." /> );
 
     if (loading) return ( <Skeleton /> );
 
@@ -78,6 +79,9 @@ export default function ArtworkPage() {
     return (
         <>
             <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 p-8 md:justify-center md:p-0 my-24">
+                <Link to="/" className="flex gap-2">
+                    <ArrowLeft /> <span>Volver a explorar</span>
+                </Link>
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2 pb-8">
                     {imageUrl ? (
                         <div className="space-y-3">
