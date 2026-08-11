@@ -5,9 +5,30 @@ import { ArrowLeft, Heart, Image, Share } from "lucide-react";
 
 import { getArtworkById, getArtworkImageUrl, getArtworksByArtist } from "../../../services/artApi";
 import type { Artwork } from "../../../types/artwork";
+import type { CardType } from "../../../types/card";
 
 import NotFound from "../../components/Error";
 import { Featured, SkeletonFeatured } from "../../components/Featured";
+
+const FAVORITES_STORAGE_KEY = "artem-favorites";
+
+function readFavorites(): CardType[] {
+    if (typeof window === "undefined") {
+        return [];
+    }
+
+    try {
+        const storedFavorites = window.localStorage.getItem(FAVORITES_STORAGE_KEY);
+
+        return storedFavorites ? JSON.parse(storedFavorites) as CardType[] : [];
+    } catch {
+        return [];
+    }
+}
+
+function writeFavorites(favorites: CardType[]) {
+    window.localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+}
 
 export default function ArtworkPage() {
     const { id } = useParams();
@@ -19,6 +40,37 @@ export default function ArtworkPage() {
     const [error, setError] = useState<string | null>(null);
 
     const [isImageExpanded, setIsImageExpanded] = useState(false);
+    const [isFavorite, setIsFavorite] = useState(false);
+
+    const favoriteArtwork: CardType | null = artwork
+        ? {
+            id: artwork.objectID,
+            image: getArtworkImageUrl(artwork.primaryImageSmall) ?? "/Images/NotFound.jpeg",
+            title: artwork.title,
+            author: artwork.artistDisplayName ?? "Artista Desconocido",
+            year: artwork.objectDate ?? "Fecha Desconocida",
+            technique: artwork.classification ?? null,
+        }
+        : null;
+
+    const handleFavorite = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!favoriteArtwork) {
+            return;
+        }
+
+        const favorites = readFavorites();
+        const exists = favorites.some((favorite) => favorite.id === favoriteArtwork.id);
+
+        const nextFavorites = exists
+            ? favorites.filter((favorite) => favorite.id !== favoriteArtwork.id)
+            : [...favorites, favoriteArtwork];
+
+        writeFavorites(nextFavorites);
+        setIsFavorite(!exists);
+    };
 
     useEffect(() => {
         if (!isValidArtworkId) {
@@ -59,6 +111,16 @@ export default function ArtworkPage() {
         };
     }, [artworkId, isValidArtworkId]);
 
+    useEffect(() => {
+        if (!artwork) {
+            return;
+        }
+
+        const favorites = readFavorites();
+
+        setIsFavorite(favorites.some((favorite) => favorite.id === artwork.objectID));
+    }, [artwork]);
+
     if (!isValidArtworkId) return ( <NotFound title="Obra No Encontrada" text="La obra que buscabas no fue encontrada." /> );
 
     if (error) return ( <NotFound title="Error al mostrar la obra" text="La obra que deseas ver no pudo ser cargada." /> );
@@ -78,7 +140,7 @@ export default function ArtworkPage() {
 
     return (
         <>
-            <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 p-8 md:justify-center md:p-0 mt-4 md:mt-12 mb-24">
+            <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-8 md:justify-center mt-4 md:mt-12 mb-24">
                 <Link to="/" className="flex gap-2">
                     <ArrowLeft /> <span>Volver a explorar</span>
                 </Link>
@@ -115,7 +177,15 @@ export default function ArtworkPage() {
 
                         <div className="border-y border-neutral-800 py-6 px-2 grid grid-cols-2 gap-4 my-6">
                             <div className="flex items-center gap-2 cursor-pointer group text-sm"> 
-                                <Heart className="size-5 text-neutral-300 group-hover:text-red-700/80 transition-colors duration-100"/> <p className="text-neutral-300">Guardar en favoritos</p>
+                                <button
+                                    onClick={handleFavorite}
+                                    className="group flex items-center gap-2 cursor-pointer group text-sm"
+                                    aria-pressed={isFavorite}
+                                    aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+                                >
+                                    <Heart className={`size-5 transition-colors duration-100 ${isFavorite ? "fill-red-700/80 text-red-700/80" : "text-neutral-300 group-hover:text-red-700/80"}`} />
+                                    <p className="text-neutral-300">Favorito</p>
+                                </button>
                             </div>
                             <div className="flex items-center gap-2 cursor-pointer group text-sm"> 
                                 <Share className="size-5 text-neutral-300 group-hover:text-[#fafafa] transition-colors duration-100"/> <p className="text-neutral-300">Compartir</p>

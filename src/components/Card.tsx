@@ -1,15 +1,61 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import type { CardType } from "../../types/card"
+
+const FAVORITES_STORAGE_KEY = "artem-favorites";
+
+function readFavorites(): CardType[] {
+    if (typeof window === "undefined") {
+        return [];
+    }
+
+    try {
+        const storedFavorites = window.localStorage.getItem(FAVORITES_STORAGE_KEY);
+
+        return storedFavorites ? JSON.parse(storedFavorites) as CardType[] : [];
+    } catch {
+        return [];
+    }
+}
+
+function writeFavorites(favorites: CardType[]) {
+    window.localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+}
 
 export const Card = (
     { id, image, title, author, year, technique }: CardType
 ) => {
+    const [isFavorite, setIsFavorite] = useState(false);
+
+    const favoriteArtwork: CardType = {
+        id,
+        image,
+        title,
+        author,
+        year,
+        technique,
+    };
+
+    useEffect(() => {
+        const favorites = readFavorites();
+
+        setIsFavorite(favorites.some((favorite) => favorite.id === id));
+    }, [id]);
+
     const handleFavorite = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
 
-        console.log('Click'); // Imprime 'Click' en la consola
+        const favorites = readFavorites();
+        const exists = favorites.some((favorite) => favorite.id === id);
+
+        const nextFavorites = exists
+            ? favorites.filter((favorite) => favorite.id !== id)
+            : [...favorites, favoriteArtwork];
+
+        writeFavorites(nextFavorites);
+        setIsFavorite(!exists);
     };
 
     return (
@@ -25,8 +71,13 @@ export const Card = (
                     )}
                 </div>
 
-                <button onClick={handleFavorite} className="flex items-start shrink-0 mt-1 cursor-pointer" >
-                    <Heart className="size-5 text-neutral-300 hover:text-red-700/80 transition-colors duration-100" />
+                <button
+                    onClick={handleFavorite}
+                    className="flex items-start shrink-0 mt-1 cursor-pointer"
+                    aria-pressed={isFavorite}
+                    aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+                >
+                    <Heart className={`size-5 transition-colors duration-100 ${isFavorite ? "fill-red-700/80 text-red-700/80" : "text-neutral-300 hover:text-red-700/80"}`} />
                 </button>
             </div>
         </Link>
