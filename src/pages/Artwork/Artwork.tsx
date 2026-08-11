@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Heart, Image, Share } from "lucide-react";
 
-import { getArtworkById, getArtworkImageUrl } from "../../../services/artApi";
+import { getArtworkById, getArtworkImageUrl, getArtworksByArtist } from "../../../services/artApi";
 import type { Artwork } from "../../../types/artwork";
 
 import NotFound from "../../components/Error";
@@ -100,7 +100,7 @@ export default function ArtworkPage() {
                         </div>
                     ) : (
                         <img
-                            src="/Images/NotFound.jpeg"
+                            src="/Images/NotFound.webp"
                             alt="Imagen no disponible"
                             className="bg-neutral-900 w-full rounded-2xl object-cover"
                         />
@@ -168,7 +168,7 @@ export default function ArtworkPage() {
                     <p className="text-lg text-neutral-300 mt-2">{artwork.creditLine ?? "Sin Información"}</p>
                 </div>
 
-                <Featured type="artist" value={artwork.artistDisplayName}/>
+                <Featured title="Más obras del artista" fetchArtworks={() => getArtworksByArtist(artwork.artistDisplayName || "")}/>
             </main>
         </>
     );

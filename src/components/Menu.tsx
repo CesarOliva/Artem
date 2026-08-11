@@ -6,9 +6,9 @@ const Menu = () => {
             <h2 className="font-italic text-4xl md:text-3xl mb-4 md:mb-0">Artem</h2>
 
             <ul className="text-lg flex gap-4">
-                <li><Link to='/'>Explorar</Link></li>
-                <li><Link to='/'>Favoritos</Link></li>
-                <li><Link to='/'>Acerca de</Link></li>
+                <li><Link to='/' className="text-neutral-400 hover:text-[#fafafa]">Explorar</Link></li>
+                <li><Link to='/' className="text-neutral-400 hover:text-[#fafafa]">Favoritos</Link></li>
+                <li><Link to='/' className="text-neutral-400 hover:text-[#fafafa]">Acerca de</Link></li>
             </ul>
         </header>
     );
