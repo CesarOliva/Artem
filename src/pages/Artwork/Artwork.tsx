@@ -78,7 +78,7 @@ export default function ArtworkPage() {
 
     return (
         <>
-            <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 p-8 md:justify-center md:p-0 my-24">
+            <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 p-8 md:justify-center md:p-0 mt-4 md:mt-12 mb-24">
                 <Link to="/" className="flex gap-2">
                     <ArrowLeft /> <span>Volver a explorar</span>
                 </Link>

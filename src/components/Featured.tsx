@@ -63,7 +63,7 @@ export const Featured = (
                 <h2 className="text-3xl font-italic">{title[type]}</h2>
                 <Link to='/' className="text-neutral-300 flex items-center cursor-pointer gap-2">Ver todas <ArrowRight className="size-5" /></Link>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-4 mt-6">
                 {artworks.map((artwork) => (
                     <Card
                         key={artwork.objectID} 
