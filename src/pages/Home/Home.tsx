@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 import { Featured } from "../../components/Featured";
-import { getArtworksByArtist } from "../../../services/artApi";
+import { getHighlights, getArworksByClassification, getPublicDomainArtworks } from "../../../services/artApi";
 
 const HomePage = () => {
     return (
@@ -32,9 +32,10 @@ const HomePage = () => {
                 </div>
             </div>
 
-            <Featured title="Obras destacadas" fetchArtworks={() => getArtworksByArtist('Picasso')}/>
-
-            <Featured title="Favoritos" fetchArtworks={() => getArtworksByArtist('Diego Rivera')}/>
+            <Featured title="Obras destacadas" fetchArtworks={() => getHighlights()}/>
+            <Featured title="Pinturas" fetchArtworks={() => getArworksByClassification("Paintings")}/>
+            <Featured title="De Dominio publico" fetchArtworks={() => getPublicDomainArtworks()}/>
+            <Featured title="Favoritas" fetchArtworks={() => getHighlights()}/>
         </main>
     );
 }
