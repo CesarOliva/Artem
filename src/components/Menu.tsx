@@ -7,8 +7,8 @@ const Menu = () => {
 
             <ul className="text-lg flex gap-4">
                 <li><Link to='/' className="text-neutral-400 hover:text-[#fafafa]">Explorar</Link></li>
-                <li><Link to='/' className="text-neutral-400 hover:text-[#fafafa]">Favoritos</Link></li>
-                <li><Link to='/' className="text-neutral-400 hover:text-[#fafafa]">Acerca de</Link></li>
+                <li><Link to='/favoritos' className="text-neutral-400 hover:text-[#fafafa]">Favoritos</Link></li>
+                <li><Link to='/acerca-de' className="text-neutral-400 hover:text-[#fafafa]">Acerca de</Link></li>
             </ul>
         </header>
     );

@@ -1,10 +1,10 @@
 import { Search } from "lucide-react";
 import { Featured } from "../../components/Featured";
-import { getHighlights, getArworksByClassification, getPublicDomainArtworks } from "../../../services/artApi";
+import { getFavoriteArtworks, getHighlights, getArworksByClassification, getPublicDomainArtworks } from "../../../services/artApi";
 
 const HomePage = () => {
     return (
-        <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-8 md:justify-center mt-4 md:mt-12 mb-24">
+        <main className="mx-auto flex max-w-6xl flex-col gap-8 px-8 md:justify-center mt-4 md:mt-12 mb-24">
             <div className="grid grid-cols-8 gap-8 pb-8">
                 <div className="order-1 md:order-0 col-span-8 md:col-span-3 flex flex-col justify-center">
                     <h1 className="font-italic text-5xl mb-4">Descubre arte que inspira.</h1>
@@ -32,10 +32,10 @@ const HomePage = () => {
                 </div>
             </div>
 
-            <Featured title="Obras destacadas" fetchArtworks={() => getHighlights()}/>
-            <Featured title="Pinturas" fetchArtworks={() => getArworksByClassification("Paintings")}/>
-            <Featured title="De Dominio publico" fetchArtworks={() => getPublicDomainArtworks()}/>
-            <Featured title="Favoritas" fetchArtworks={() => getHighlights()}/>
+            <Featured title="Obras destacadas" fetchArtworks={() => getHighlights()} link="/artwork?highlights"/>
+            <Featured title="Pinturas" fetchArtworks={() => getArworksByClassification("Paintings")} link="/artwork?paintings"/>
+            <Featured title="De Dominio publico" fetchArtworks={() => getPublicDomainArtworks()} link="/artwork?public-domain"/>
+            <Featured title="Favoritas" fetchArtworks={() => getFavoriteArtworks()} link="/favoritos"/>
         </main>
     );
 }

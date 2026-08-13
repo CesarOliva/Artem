@@ -1,4 +1,7 @@
 import type { Artwork } from "../types/artwork";
+import type { CardType } from "../types/card";
+
+const FAVORITES_STORAGE_KEY = "artem-favorites";
 
 export async function getArtworkById(id: number): Promise<Artwork> {
     const response = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`);
@@ -205,6 +208,34 @@ export async function searchArtworks(query: string): Promise<Artwork[]> {
     }
 
     return artworks;
+}
+
+export async function getFavoriteArtworks(): Promise<Artwork[]> {
+    if (typeof window === "undefined") {
+        return [];
+    }
+
+    try {
+        const storedFavorites = window.localStorage.getItem(FAVORITES_STORAGE_KEY);
+        const favorites: CardType[] = storedFavorites ? JSON.parse(storedFavorites) as CardType[] : [];
+
+        return favorites.map((favorite) => ({
+            objectID: favorite.id,
+            title: favorite.title,
+            artistDisplayName: favorite.author,
+            objectDate: favorite.year,
+            medium: null,
+            classification: favorite.technique,
+            dimensions: null,
+            repository: null,
+            department: null,
+            creditLine: null,
+            primaryImage: favorite.image,
+            primaryImageSmall: favorite.image,
+        }));
+    } catch {
+        return [];
+    }
 }
 
 export function getArtworkImageUrl(imageUrl: string | null) {

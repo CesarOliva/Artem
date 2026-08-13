@@ -9,10 +9,11 @@ import { Card, SkeletonCard } from "./Card";
 
 type FeaturedProps = {
     title: string;
+    link?: string;
     fetchArtworks: () => Promise<Artwork[]>;
 };
 
-export const Featured = ( { title, fetchArtworks }: FeaturedProps ) => {
+export const Featured = ( { title, fetchArtworks, link }: FeaturedProps ) => {
     const [artworks, setArtworks] = useState<Artwork[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -45,7 +46,7 @@ export const Featured = ( { title, fetchArtworks }: FeaturedProps ) => {
         <div>
             <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-italic">{title}</h2>
-                <Link to='/' className="text-neutral-300 flex items-center cursor-pointer gap-2">Ver todas <ArrowRight className="size-5" /></Link>
+                <Link to={link || '/'} className="text-neutral-300 flex items-center cursor-pointer gap-2">Ver todas <ArrowRight className="size-5" /></Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-4 mt-6">
                 {artworks.map((artwork) => (

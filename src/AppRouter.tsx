@@ -3,6 +3,8 @@ import Home from "./pages/Home/Home";
 import Artwork from "./pages/Artwork/Artwork";
 import NotFound from "./pages/NotFound/NotFound";
 import Menu from "./components/Menu";
+import Favoritos from "./pages/Favoritos/favoritos";
+import About from "./pages/Acerca-de/About";
 
 function Layout() {
     return (
@@ -19,6 +21,8 @@ export default function AppRouter() {
             <Routes>
                 <Route element={<Layout/>}>
                     <Route path="/" element={<Home />} />
+                    <Route path="/acerca-de" element={<About />} />
+                    <Route path="/favoritos" element={<Favoritos />} />
                     <Route path="/artwork" element={<></>} />
                     <Route path="/artwork/:id" element={<Artwork />} />
                 </Route>
