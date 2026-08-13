@@ -80,7 +80,7 @@ export async function getHighlights(): Promise<Artwork[]> {
     return artworks;
 }
 
-export async function getArworksByClassification(query: string): Promise<Artwork[]> {
+export async function getArtworksByClassification(query: string): Promise<Artwork[]> {
     const response = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/search?q=&medium=${query}`);
     
     if (!response.ok) {

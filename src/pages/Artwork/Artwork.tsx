@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Heart, Image, Share } from "lucide-react";
+import { ArrowLeft, ArrowRight, Heart, Image, Landmark, Share } from "lucide-react";
 
 import { getArtworkById, getArtworkImageUrl, getArtworksByArtist } from "../../../services/artApi";
 import type { Artwork } from "../../../types/artwork";
@@ -239,6 +239,22 @@ export default function ArtworkPage() {
                 </div>
 
                 <Featured title="Más obras del artista" fetchArtworks={() => getArtworksByArtist(artwork.artistDisplayName || "")}/>
+
+                <section className="flex flex-col md:flex-row justify-between gap-2 space-y-4 md:space-y-0 items-center bg-neutral-900/80 p-6 rounded-xl">
+                    <div className="flex gap-2 items-center">
+                        <Landmark className="size-7 mr-2 text-neutral-300"/>
+
+                        <div className="flex flex-col">
+                            <p>Ver esta obra en el museo</p>
+                            <p className="text-sm text-neutral-400">Visita el sitio oficial del Museo Metropolitano de Arte para mas información.</p>
+                        </div>
+                    </div>
+
+                    <a href={`https://www.metmuseum.org/es/art/collection/search/${artwork.objectID}`} target="_blank" rel="noopener noreferrer" className="w-full md:w-auto justify-center flex items-center gap-2 border border-neutral-300/20 rounded-lg px-4 py-2 text-neutral-400">
+                        Ir al sitio oficial
+                        <ArrowRight className="size-4"/>
+                    </a>
+                </section>
             </main>
         </>
     );
