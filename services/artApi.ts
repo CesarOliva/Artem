@@ -1,10 +1,32 @@
 import type { Artwork } from "../types/artwork";
-import type { CardType } from "../types/card";
 
-const FAVORITES_STORAGE_KEY = "artem-favorites";
+const API_BASE = "https://collectionapi.metmuseum.org/public/collection/v1";
+
+// Simple in-memory cache with TTL
+const CACHE_TTL_MS = 1000 * 60 * 5;
+type CacheEntry = { expiry: number; value: any };
+const cache = new Map<string, CacheEntry>();
+
+function getFromCache<T>(key: string): T | null {
+    const entry = cache.get(key);
+    if (!entry) return null;
+    if (Date.now() > entry.expiry) {
+        cache.delete(key);
+        return null;
+    }
+    return entry.value as T;
+}
+
+function setCache<T>(key: string, value: T, ttl = CACHE_TTL_MS) {
+    cache.set(key, { value, expiry: Date.now() + ttl });
+}
 
 export async function getArtworkById(id: number): Promise<Artwork> {
-    const response = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`);
+    const cacheKey = `object:${id}`;
+    const cached = getFromCache<Artwork>(cacheKey);
+    if (cached) return cached;
+
+    const response = await fetch(`${API_BASE}/objects/${id}`);
 
     if (!response.ok) {
         throw new Error(`No se pudo obtener la obra (${response.status})`);
@@ -12,7 +34,7 @@ export async function getArtworkById(id: number): Promise<Artwork> {
 
     const json: Artwork = await response.json();
 
-    return {
+    const artwork: Artwork = {
         objectID: json.objectID,
         title: json.title,
         artistDisplayName: json.artistDisplayName || null,
@@ -26,220 +48,77 @@ export async function getArtworkById(id: number): Promise<Artwork> {
         primaryImage: json.primaryImage || null,
         primaryImageSmall: json.primaryImageSmall || null,
     };
+
+    setCache(cacheKey, artwork);
+    return artwork;
 }
 
-export async function getArtworksByArtist(artistName: string): Promise<Artwork[]> {
-    const response = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/search?q=${artistName}`);
-    
-    if (!response.ok) {
-        throw new Error(`No se pudo obtener las obras del artista (${response.status})`);
-    }
-    
+async function fetchObjectIDs(searchUrl: string): Promise<number[]> {
+    const response = await fetch(searchUrl);
+
+    if (!response.ok) throw new Error(`Search request failed (${response.status})`);
+
     const json = await response.json();
-    const objectIDs: number[] = json.objectIDs || [];
-
-    const artworks: Artwork[] = [];
-    
-    for (const objectID of objectIDs) {
-        if(artworks.length >= 4) break;
-
-        try {
-            const artwork = await getArtworkById(objectID);
-            artworks.push(artwork);
-        } catch (error) {
-            console.error(`Error al obtener la obra con ID ${objectID}:`, error);
-        }
-    }
-
-    return artworks;
+    return json.objectIDs || [];
 }
 
-export async function getHighlights(): Promise<Artwork[]> {
-    const response = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/search?q=&isHighlight=true`);
-    
-    if (!response.ok) {
-        throw new Error(`No se pudo obtener las obras del artista (${response.status})`);
-    }
-    
-    const json = await response.json();
-    const objectIDs: number[] = json.objectIDs || [];
+async function fetchFirstNObjectsFromSearchUrl(searchUrl: string, n = 4): Promise<Artwork[]> {
+    const cacheKey = `search:${searchUrl}:n:${n}`;
+    const cached = getFromCache<Artwork[]>(cacheKey);
+    if (cached) return cached;
 
-    const artworks: Artwork[] = [];
-    
-    for (const objectID of objectIDs) {
-        if(artworks.length >= 4) break;
+    const objectIDs = await fetchObjectIDs(searchUrl);
+    const ids = objectIDs.slice(0, n);
 
-        try {
-            const artwork = await getArtworkById(objectID);
-            artworks.push(artwork);
-        } catch (error) {
-            console.error(`Error al obtener la obra con ID ${objectID}:`, error);
-        }
-    }
+    // Fetch artworks in parallel for performance
+    const promises = ids.map((id) => getArtworkById(id));
+    const results = await Promise.allSettled(promises);
 
+    const artworks = results
+        .filter((r): r is PromiseFulfilledResult<Artwork> => r.status === "fulfilled")
+        .map((r) => r.value);
+
+    setCache(cacheKey, artworks);
     return artworks;
-}
-
-export async function getArtworksByClassification(query: string): Promise<Artwork[]> {
-    const response = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/search?q=&medium=${query}`);
-    
-    if (!response.ok) {
-        throw new Error(`No se pudo obtener las obras del artista (${response.status})`);
-    }
-    
-    const json = await response.json();
-    const objectIDs: number[] = json.objectIDs || [];
-
-    const artworks: Artwork[] = [];
-    
-    for (const objectID of objectIDs) {
-        if(artworks.length >= 4) break;
-
-        try {
-            const artwork = await getArtworkById(objectID);
-            artworks.push(artwork);
-        } catch (error) {
-            console.error(`Error al obtener la obra con ID ${objectID}:`, error);
-        }
-    }
-
-    return artworks;
-}
-
-export async function getPublicDomainArtworks(): Promise<Artwork[]> {
-    const response = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/search?q=&hasImages=true&isPublicDomain=true`);
-    
-    if (!response.ok) {
-        throw new Error(`No se pudo obtener las obras del artista (${response.status})`);
-    }
-    
-    const json = await response.json();
-    const objectIDs: number[] = json.objectIDs || [];
-
-    const artworks: Artwork[] = [];
-    
-    for (const objectID of objectIDs) {
-        if(artworks.length >= 4) break;
-
-        try {
-            const artwork = await getArtworkById(objectID);
-            artworks.push(artwork);
-        } catch (error) {
-            console.error(`Error al obtener la obra con ID ${objectID}:`, error);
-        }
-    }
-
-    return artworks;
-}
-
-export async function getArtworksWithImages(): Promise<Artwork[]> {
-    const response = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/search?q=&hasImages=true`);
-    
-    if (!response.ok) {
-        throw new Error(`No se pudo obtener las obras del artista (${response.status})`);
-    }
-    
-    const json = await response.json();
-    const objectIDs: number[] = json.objectIDs || [];
-
-    const artworks: Artwork[] = [];
-    
-    for (const objectID of objectIDs) {
-        if(artworks.length >= 4) break;
-
-        try {
-            const artwork = await getArtworkById(objectID);
-            artworks.push(artwork);
-        } catch (error) {
-            console.error(`Error al obtener la obra con ID ${objectID}:`, error);
-        }
-    }
-
-    return artworks;
-}
-
-export async function getArtworksByDate(start: string, end: string): Promise<Artwork[]> {
-    const response = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/search?q=&hasImages=true&dateBegin=${start}&dateEnd=${end}`);
-    
-    if (!response.ok) {
-        throw new Error(`No se pudo obtener las obras del artista (${response.status})`);
-    }
-    
-    const json = await response.json();
-    const objectIDs: number[] = json.objectIDs || [];
-
-    const artworks: Artwork[] = [];
-    
-    for (const objectID of objectIDs) {
-        if(artworks.length >= 4) break;
-
-        try {
-            const artwork = await getArtworkById(objectID);
-            artworks.push(artwork);
-        } catch (error) {
-            console.error(`Error al obtener la obra con ID ${objectID}:`, error);
-        }
-    }
-
-    return artworks;
-}
-
-export async function searchArtworks(query: string): Promise<Artwork[]> {
-    const response = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/search?q=${query}`);
-    
-    if (!response.ok) {
-        throw new Error(`No se pudo obtener las obras del artista (${response.status})`);
-    }
-    
-    const json = await response.json();
-    const objectIDs: number[] = json.objectIDs || [];
-
-    const artworks: Artwork[] = [];
-    
-    for (const objectID of objectIDs) {
-        if(artworks.length >= 4) break;
-
-        try {
-            const artwork = await getArtworkById(objectID);
-            artworks.push(artwork);
-        } catch (error) {
-            console.error(`Error al obtener la obra con ID ${objectID}:`, error);
-        }
-    }
-
-    return artworks;
-}
-
-export async function getFavoriteArtworks(): Promise<Artwork[]> {
-    if (typeof window === "undefined") {
-        return [];
-    }
-
-    try {
-        const storedFavorites = window.localStorage.getItem(FAVORITES_STORAGE_KEY);
-        const favorites: CardType[] = storedFavorites ? JSON.parse(storedFavorites) as CardType[] : [];
-
-        return favorites.map((favorite) => ({
-            objectID: favorite.id,
-            title: favorite.title,
-            artistDisplayName: favorite.author,
-            objectDate: favorite.year,
-            medium: null,
-            classification: favorite.technique,
-            dimensions: null,
-            repository: null,
-            department: null,
-            creditLine: null,
-            primaryImage: favorite.image,
-            primaryImageSmall: favorite.image,
-        }));
-    } catch {
-        return [];
-    }
 }
 
 export function getArtworkImageUrl(imageUrl: string | null) {
     if (!imageUrl) return null;
-
     return imageUrl;
+}
+
+export async function getArtworksByArtist(artistName: string): Promise<Artwork[]> {
+    const q = encodeURIComponent(artistName);
+    const url = `${API_BASE}/search?q=${q}`;
+    return fetchFirstNObjectsFromSearchUrl(url, 4);
+}
+
+export async function getHighlights(): Promise<Artwork[]> {
+    const url = `${API_BASE}/search?q=&isHighlight=true`;
+    return fetchFirstNObjectsFromSearchUrl(url, 4);
+}
+
+export async function getArtworksByClassification(query: string): Promise<Artwork[]> {
+    const url = `${API_BASE}/search?q=&medium=${encodeURIComponent(query)}`;
+    return fetchFirstNObjectsFromSearchUrl(url, 4);
+}
+
+export async function getPublicDomainArtworks(): Promise<Artwork[]> {
+    const url = `${API_BASE}/search?q=&hasImages=true&isPublicDomain=true`;
+    return fetchFirstNObjectsFromSearchUrl(url, 4);
+}
+
+export async function getArtworksWithImages(): Promise<Artwork[]> {
+    const url = `${API_BASE}/search?q=&hasImages=true`;
+    return fetchFirstNObjectsFromSearchUrl(url, 4);
+}
+
+export async function getArtworksByDate(start: string, end: string): Promise<Artwork[]> {
+    const url = `${API_BASE}/search?q=&hasImages=true&dateBegin=${encodeURIComponent(start)}&dateEnd=${encodeURIComponent(end)}`;
+    return fetchFirstNObjectsFromSearchUrl(url, 4);
+}
+
+export async function searchArtworks(query: string): Promise<Artwork[]> {
+    const url = `${API_BASE}/search?q=${encodeURIComponent(query)}`;
+    return fetchFirstNObjectsFromSearchUrl(url, 4);
 }

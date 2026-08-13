@@ -1,27 +1,8 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
-import type { CardType } from "../../types/card"
-
-const FAVORITES_STORAGE_KEY = "artem-favorites";
-
-function readFavorites(): CardType[] {
-    if (typeof window === "undefined") {
-        return [];
-    }
-
-    try {
-        const storedFavorites = window.localStorage.getItem(FAVORITES_STORAGE_KEY);
-
-        return storedFavorites ? JSON.parse(storedFavorites) as CardType[] : [];
-    } catch {
-        return [];
-    }
-}
-
-function writeFavorites(favorites: CardType[]) {
-    window.localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
-}
+import type { CardType } from "../../types/card";
+import { readFavorites, writeFavorites } from "../../services/favorites";
 
 export const Card = (
     { id, image, title, author, year, technique }: CardType
@@ -59,8 +40,8 @@ export const Card = (
     };
 
     return (
-        <Link to={`/artwork/${id}`} className="rounded-xl bg-neutral-900 cursor-pointer transition-colors duration-300">
-            <img className="w-full object-cover rounded-t-xl h-48" src={image} alt={title} />
+            <Link to={`/artwork/${id}`} className="rounded-xl bg-neutral-900 cursor-pointer transition-colors duration-300">
+                <img loading="lazy" className="w-full object-cover rounded-t-xl h-48" src={image} alt={title} />
 
             <div className="p-4 flex gap-1">
                 <div className="flex-1 min-w-0">
@@ -72,6 +53,7 @@ export const Card = (
                 </div>
 
                 <button
+                    type="button"
                     onClick={handleFavorite}
                     className="flex items-start shrink-0 mt-1 cursor-pointer"
                     aria-pressed={isFavorite}

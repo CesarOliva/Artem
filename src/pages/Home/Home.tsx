@@ -1,6 +1,7 @@
 import { Search } from "lucide-react";
 import { Featured } from "../../components/Featured";
-import { getFavoriteArtworks, getHighlights, getArtworksByClassification, getPublicDomainArtworks } from "../../../services/artApi";
+import { getHighlights, getArtworksByClassification, getPublicDomainArtworks } from "../../../services/artApi";
+import { getFavoriteArtworks } from "../../../services/favorites";
 
 const HomePage = () => {
     return (
@@ -20,6 +21,7 @@ const HomePage = () => {
                     <img
                         src='/Images/Destacada.webp'
                         alt='Wheat Field with cypresses'
+                        loading="lazy"
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
 
@@ -32,10 +34,10 @@ const HomePage = () => {
                 </div>
             </div>
 
-            <Featured title="Obras destacadas" fetchArtworks={() => getHighlights()} link="/artwork?highlights"/>
+            <Featured title="Obras destacadas" fetchArtworks={getHighlights} link="/artwork?highlights"/>
             <Featured title="Pinturas" fetchArtworks={() => getArtworksByClassification("Paintings")} link="/artwork?paintings"/>
-            <Featured title="De Dominio publico" fetchArtworks={() => getPublicDomainArtworks()} link="/artwork?public-domain"/>
-            <Featured title="Favoritas" fetchArtworks={() => getFavoriteArtworks()} link="/favoritos"/>
+            <Featured title="De Dominio publico" fetchArtworks={getPublicDomainArtworks} link="/artwork?public-domain"/>
+            <Featured title="Favoritas" fetchArtworks={getFavoriteArtworks} link="/favoritos"/>
         </main>
     );
 }

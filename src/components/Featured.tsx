@@ -11,9 +11,10 @@ type FeaturedProps = {
     title: string;
     link?: string;
     fetchArtworks: () => Promise<Artwork[]>;
+    reloadKey?: any;
 };
 
-export const Featured = ( { title, fetchArtworks, link }: FeaturedProps ) => {
+export const Featured = ( { title, fetchArtworks, link, reloadKey }: FeaturedProps ) => {
     const [artworks, setArtworks] = useState<Artwork[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -36,7 +37,7 @@ export const Featured = ( { title, fetchArtworks, link }: FeaturedProps ) => {
         };
 
         void loadArt();
-    }, [fetchArtworks]);
+    }, [reloadKey]);
 
     if(loading) return (<SkeletonFeatured/>);
 

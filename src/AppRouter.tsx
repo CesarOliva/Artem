@@ -5,10 +5,12 @@ import NotFound from "./pages/NotFound/NotFound";
 import Menu from "./components/Menu";
 import Favoritos from "./pages/Favoritos/favoritos";
 import About from "./pages/Acerca-de/About";
+import { Toaster } from "sonner";
 
 function Layout() {
     return (
         <>
+            <Toaster position="bottom-center" />
             <Menu />
             <Outlet />
         </>

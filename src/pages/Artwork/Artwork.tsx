@@ -2,33 +2,16 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Heart, Image, Landmark, Share } from "lucide-react";
+import { toast } from 'sonner';
 
 import { getArtworkById, getArtworkImageUrl, getArtworksByArtist } from "../../../services/artApi";
+import { readFavorites, writeFavorites } from "../../../services/favorites";
 import type { Artwork } from "../../../types/artwork";
 import type { CardType } from "../../../types/card";
 
 import NotFound from "../../components/Error";
 import { Featured, SkeletonFeatured } from "../../components/Featured";
 
-const FAVORITES_STORAGE_KEY = "artem-favorites";
-
-function readFavorites(): CardType[] {
-    if (typeof window === "undefined") {
-        return [];
-    }
-
-    try {
-        const storedFavorites = window.localStorage.getItem(FAVORITES_STORAGE_KEY);
-
-        return storedFavorites ? JSON.parse(storedFavorites) as CardType[] : [];
-    } catch {
-        return [];
-    }
-}
-
-function writeFavorites(favorites: CardType[]) {
-    window.localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
-}
 
 export default function ArtworkPage() {
     const { id } = useParams();
@@ -45,7 +28,7 @@ export default function ArtworkPage() {
     const favoriteArtwork: CardType | null = artwork
         ? {
             id: artwork.objectID,
-            image: getArtworkImageUrl(artwork.primaryImageSmall) ?? "/Images/NotFound.jpeg",
+            image: getArtworkImageUrl(artwork.primaryImageSmall) ?? "/Images/NotFound.webp",
             title: artwork.title,
             author: artwork.artistDisplayName ?? "Artista Desconocido",
             year: artwork.objectDate ?? "Fecha Desconocida",
@@ -119,6 +102,31 @@ export default function ArtworkPage() {
         const favorites = readFavorites();
 
         setIsFavorite(favorites.some((favorite) => favorite.id === artwork.objectID));
+        
+        try {
+            const prevTitle = document.title;
+            document.title = `${artwork.title} — Artem`;
+
+            const setMeta = (attr: string, value: string, prop = false) => {
+                const selector = prop ? `meta[property="${attr}"]` : `meta[name="${attr}"]`;
+                let el = document.querySelector(selector) as HTMLMetaElement | null;
+                if (!el) {
+                    el = document.createElement('meta');
+                    if (prop) el.setAttribute('property', attr);
+                    else el.setAttribute('name', attr);
+                    document.head.appendChild(el);
+                }
+                el.setAttribute('content', value);
+            };
+
+            setMeta('description', artwork.creditLine ?? `${artwork.title} — ${artwork.artistDisplayName ?? ''}`);
+            setMeta('og:title', artwork.title, true);
+            setMeta('og:description', artwork.creditLine ?? '', true);
+            setMeta('og:image', artwork.primaryImageSmall ?? '', true);
+
+            return () => { document.title = prevTitle; };
+        } catch {
+        }
     }, [artwork]);
 
     if (!isValidArtworkId) return ( <NotFound title="Obra No Encontrada" text="La obra que buscabas no fue encontrada." /> );
@@ -138,16 +146,23 @@ export default function ArtworkPage() {
         setIsImageExpanded((currentValue) => !currentValue);
     };
 
+    const handleCopy = (objectID: number) => {
+        const url = `${window.location.origin}/artwork/${objectID}`;
+        navigator.clipboard.writeText(url);
+        toast.success("Enlace copiado al portapapeles");
+    };
+
     return (
         <>
             <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-8 md:justify-center mt-4 md:mt-12 mb-24">
-                <Link to="/" className="flex gap-2">
+                <Link to="/explorar" className="flex gap-2">
                     <ArrowLeft /> <span>Volver a explorar</span>
                 </Link>
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2 pb-8">
                     {imageUrl ? (
                         <div className="space-y-3">
                             <img
+                                loading="lazy"
                                 src={imageUrl}
                                 alt={artwork.title}
                                 className={`rounded-2xl bg-neutral-900 block w-full object-contain transition-all duration-300 ${isImageExpanded ? "h-[80vh]" : "aspect-4/5"}`}
@@ -178,6 +193,7 @@ export default function ArtworkPage() {
                         <div className="border-y border-neutral-800 py-6 px-2 grid grid-cols-2 gap-4 my-6">
                             <div className="flex items-center gap-2 cursor-pointer group text-sm"> 
                                 <button
+                                    type="button"
                                     onClick={handleFavorite}
                                     className="group flex items-center gap-2 cursor-pointer group text-sm"
                                     aria-pressed={isFavorite}
@@ -188,7 +204,14 @@ export default function ArtworkPage() {
                                 </button>
                             </div>
                             <div className="flex items-center gap-2 cursor-pointer group text-sm"> 
-                                <Share className="size-5 text-neutral-300 group-hover:text-[#fafafa] transition-colors duration-100"/> <p className="text-neutral-300">Compartir</p>
+                                <button
+                                    type="button"
+                                    onClick={() => handleCopy(artwork.objectID)}
+                                    className="group flex items-center gap-2 cursor-pointer group text-sm"
+                                >
+                                    <Share className='size-5 transition-colors duration-100 text-neutral-300 group-hover:text-[#fafafa]' />
+                                    <p className="text-neutral-300">Compartir</p>
+                                </button>
                             </div>
                         </div>
 
@@ -238,7 +261,11 @@ export default function ArtworkPage() {
                     <p className="text-lg text-neutral-300 mt-2">{artwork.creditLine ?? "Sin Información"}</p>
                 </div>
 
-                <Featured title="Más obras del artista" fetchArtworks={() => getArtworksByArtist(artwork.artistDisplayName || "")}/>
+                <Featured
+                    title="Más obras del artista"
+                    fetchArtworks={() => artwork.artistDisplayName ? getArtworksByArtist(artwork.artistDisplayName) : Promise.resolve([])}
+                    reloadKey={artwork.objectID}
+                />
 
                 <section className="flex flex-col md:flex-row justify-between gap-2 space-y-4 md:space-y-0 items-center bg-neutral-900/80 p-6 rounded-xl">
                     <div className="flex gap-2 items-center">

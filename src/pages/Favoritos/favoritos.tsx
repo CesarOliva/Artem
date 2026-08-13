@@ -1,5 +1,5 @@
 import { SkeletonFeatured } from "../../components/Featured";
-import { getFavoriteArtworks } from "../../../services/artApi";
+import { getFavoriteArtworks } from "../../../services/favorites";
 import type { Artwork } from "../../../types/artwork";
 import { useEffect, useState } from "react";
 
