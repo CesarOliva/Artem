@@ -298,7 +298,7 @@ function Skeleton() {
 
                 <section>
                     <span className="bg-neutral-900 w-32 h-6 block mb-2 animate-pulse" />
-                    <h1 className="bg-neutral-900 w-full h-12 mb-4 animate-pulse rounded-md" />
+                    <h2 className="bg-neutral-900 w-full h-12 mb-4 animate-pulse rounded-md" />
 
                     <h2 className="bg-neutral-900 w-48 h-6 mb-2 animate-pulse rounded-md" />
                     <h3 className="bg-neutral-900 w-32 h-5 animate-pulse rounded-md" />
