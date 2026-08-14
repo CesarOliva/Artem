@@ -1,20 +1,40 @@
+import { useState } from "react";
 import { Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Featured } from "../../components/Featured";
 import { getHighlights, getArtworksByClassification, getPublicDomainArtworks } from "../../../services/artApi";
 import { getFavoriteArtworks } from "../../../services/favorites";
 
 const HomePage = () => {
+    const navigate = useNavigate();
+    const [searchValue, setSearchValue] = useState("");
+
+    const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        const term = searchValue.trim();
+        navigate(term ? `/artwork?search=${encodeURIComponent(term)}` : "/artwork");
+    };
+
     return (
         <main className="mx-auto flex max-w-6xl flex-col gap-8 px-8 md:justify-center mt-4 md:mt-12 mb-24">
             <div className="grid grid-cols-8 gap-8 pb-8">
                 <div className="order-1 md:order-0 col-span-8 md:col-span-3 flex flex-col justify-center">
                     <h1 className="font-italic text-5xl mb-4">Descubre arte que inspira.</h1>
-                    <p className="text-lg">Explora obras del Museo Metropolitano de Arte de Nueva York y vive el arte de una nueva manera.</p>
+                    <p className="text-lg text-neutral-300">Explora obras del Museo Metropolitano de Arte de Nueva York y vive el arte de una nueva manera.</p>
 
-                    <div className="border border-neutral-800 rounded-md bg-neutral-900/30 p-3 flex items-center gap-4 mt-6">
+                    <form onSubmit={handleSearch} className="mt-6 flex items-center gap-4 rounded-md border border-neutral-800 bg-neutral-900/30 p-3">
                         <Search className="size-6"/>
-                        <input type="text" name="search" id="search" className="w-full focus:ring-0 focus:outline-none" placeholder="Busca obras, artistas, temas..."/>
-                    </div>
+                        <input
+                            type="text"
+                            name="search"
+                            id="search"
+                            value={searchValue}
+                            onChange={(event) => setSearchValue(event.target.value)}
+                            className="w-full bg-transparent focus:ring-0 focus:outline-none"
+                            placeholder="Busca obras, artistas, temas..."
+                        />
+                    </form>
                 </div>
 
                 <div className="order-0 md:order-1 col-span-8 md:col-span-5 w-full bg-neutral-900 h-80 group relative overflow-hidden rounded-2xl shadow-xl">
@@ -34,9 +54,9 @@ const HomePage = () => {
                 </div>
             </div>
 
-            <Featured title="Obras destacadas" fetchArtworks={getHighlights} link="/artwork?highlights"/>
-            <Featured title="Pinturas" fetchArtworks={() => getArtworksByClassification("Paintings")} link="/artwork?paintings"/>
-            <Featured title="De Dominio publico" fetchArtworks={getPublicDomainArtworks} link="/artwork?public-domain"/>
+            <Featured title="Obras destacadas" fetchArtworks={getHighlights} link="/artwork"/>
+            <Featured title="Pinturas" fetchArtworks={() => getArtworksByClassification("Paintings")} link="/artwork"/>
+            <Featured title="De Dominio publico" fetchArtworks={getPublicDomainArtworks} link="/artwork"/>
             <Featured title="Favoritas" fetchArtworks={getFavoriteArtworks} link="/favoritos"/>
         </main>
     );

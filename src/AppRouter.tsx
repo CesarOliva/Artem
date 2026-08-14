@@ -6,6 +6,7 @@ import Menu from "./components/Menu";
 import Favoritos from "./pages/Favoritos/favoritos";
 import About from "./pages/Acerca-de/About";
 import { Toaster } from "sonner";
+import Explore from "./pages/Explorar/Explore";
 
 function Layout() {
     return (
@@ -25,7 +26,7 @@ export default function AppRouter() {
                     <Route path="/" element={<Home />} />
                     <Route path="/acerca-de" element={<About />} />
                     <Route path="/favoritos" element={<Favoritos />} />
-                    <Route path="/artwork" element={<></>} />
+                    <Route path="/artwork" element={<Explore />} />
                     <Route path="/artwork/:id" element={<Artwork />} />
                 </Route>
 

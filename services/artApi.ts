@@ -62,6 +62,23 @@ async function fetchObjectIDs(searchUrl: string): Promise<number[]> {
     return json.objectIDs || [];
 }
 
+type SearchResult = {
+    total: number;
+    objectIDs: number[];
+};
+
+async function fetchSearchResult(searchUrl: string): Promise<SearchResult> {
+    const response = await fetch(searchUrl);
+
+    if (!response.ok) throw new Error(`Search request failed (${response.status})`);
+
+    const json = await response.json();
+    return {
+        total: json.total || 0,
+        objectIDs: json.objectIDs || [],
+    };
+}
+
 async function fetchFirstNObjectsFromSearchUrl(searchUrl: string, n = 4): Promise<Artwork[]> {
     const cacheKey = `search:${searchUrl}:n:${n}`;
     const cached = getFromCache<Artwork[]>(cacheKey);
@@ -121,4 +138,45 @@ export async function getArtworksByDate(start: string, end: string): Promise<Art
 export async function searchArtworks(query: string): Promise<Artwork[]> {
     const url = `${API_BASE}/search?q=${encodeURIComponent(query)}`;
     return fetchFirstNObjectsFromSearchUrl(url, 4);
+}
+
+export type ArtworkSearchFilters = {
+    query?: string;
+    classification?: string;
+    artist?: string;
+    isPublicDomain?: boolean;
+    hasImages?: boolean;
+    dateBegin?: number | null;
+    dateEnd?: number | null;
+    page?: number;
+    limit?: number;
+};
+
+export async function searchArtworksWithFilters(filters: ArtworkSearchFilters): Promise<{ artworks: Artwork[]; total: number }> {
+    const params = new URLSearchParams();
+    params.set("q", filters.query ?? "");
+    params.set("hasImages", String(filters.hasImages ?? true));
+
+    if (filters.classification) params.set("classification", filters.classification);
+    if (filters.artist) params.set("artistOrCulture", filters.artist);
+    if (filters.isPublicDomain !== undefined) params.set("isPublicDomain", String(filters.isPublicDomain));
+    if (filters.dateBegin !== undefined && filters.dateBegin !== null) params.set("dateBegin", String(filters.dateBegin));
+    if (filters.dateEnd !== undefined && filters.dateEnd !== null) params.set("dateEnd", String(filters.dateEnd));
+
+    const page = Math.max(1, filters.page ?? 1);
+    const limit = Math.max(1, filters.limit ?? 12);
+    params.set("page", String(page));
+    params.set("pageSize", String(limit));
+
+    const url = `${API_BASE}/search?${params.toString()}`;
+    const { total, objectIDs } = await fetchSearchResult(url);
+    const ids = objectIDs.slice(0, limit);
+    const artworks = await Promise.allSettled(ids.map((id) => getArtworkById(id)));
+
+    return {
+        total,
+        artworks: artworks
+            .filter((result): result is PromiseFulfilledResult<Artwork> => result.status === "fulfilled")
+            .map((result) => result.value),
+    };
 }

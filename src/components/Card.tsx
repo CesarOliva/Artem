@@ -40,15 +40,15 @@ export const Card = (
     };
 
     return (
-            <Link to={`/artwork/${id}`} className="rounded-xl bg-neutral-900 cursor-pointer transition-colors duration-300">
+            <Link to={`/artwork/${id}`} className="block w-full min-w-0 rounded-xl bg-neutral-900 cursor-pointer transition-colors duration-300">
                 <img loading="lazy" className="w-full object-cover rounded-t-xl h-48" src={image} alt={title} />
 
-            <div className="p-4 flex gap-1">
-                <div className="flex-1 min-w-0">
-                    <h3 className="font-medium mb-1 truncate">{title}</h3>
-                    <p className="text-sm text-neutral-400 mb-1">{author}, {year}</p>
+            <div className="flex min-w-0 gap-1 p-4">
+                <div className="min-w-0 flex-1">
+                    <h3 className="mb-1 truncate font-medium">{title}</h3>
+                    <p className="mb-1 text-sm text-neutral-400">{author}, {year}</p>
                     {technique && (
-                        <p className="text-sm text-neutral-400 truncate">{technique}</p>
+                        <p className="truncate text-sm text-neutral-400">{technique}</p>
                     )}
                 </div>
 
@@ -59,7 +59,7 @@ export const Card = (
                     aria-pressed={isFavorite}
                     aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
                 >
-                    <Heart className={`size-5 transition-colors duration-100 ${isFavorite ? "fill-red-700/80 text-red-700/80" : "text-neutral-300 hover:text-red-700/80"}`} />
+                    <Heart className={`size-5 transition-colors duration-100 ${isFavorite ? "fill-white text-white" : "text-neutral-300 hover:text-white"}`} />
                 </button>
             </div>
         </Link>

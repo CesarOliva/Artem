@@ -184,7 +184,7 @@ export default function ArtworkPage() {
                     )}
 
                     <section>
-                        <span className="text-neutral-300 mb-2 block">{artwork.classification ?? "Tipo de Obra No Especificado"}</span>
+                        <span className="text-xs uppercase tracking-[0.35em] text-neutral-400">{artwork.classification ?? "Tipo de Obra No Especificado"}</span>
                         <h1 className="text-5xl font-semibold font-italic mb-4">{artwork.title}</h1>
 
                         <p className="text-xl font-light mb-2">{artwork.artistDisplayName ?? "Autor Desconocido"}</p>
@@ -199,7 +199,7 @@ export default function ArtworkPage() {
                                     aria-pressed={isFavorite}
                                     aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
                                 >
-                                    <Heart className={`size-5 transition-colors duration-100 ${isFavorite ? "fill-red-700/80 text-red-700/80" : "text-neutral-300 group-hover:text-red-700/80"}`} />
+                                    <Heart className={`size-5 transition-colors duration-100 ${isFavorite ? "fill-white text-white" : "text-neutral-300 group-hover:text-white"}`} />
                                     <p className="text-neutral-300">Favorito</p>
                                 </button>
                             </div>

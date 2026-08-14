@@ -5,10 +5,10 @@ const About = () => {
         <main className="mx-auto flex max-w-6xl flex-col gap-8 px-8 md:justify-center mt-4 md:mt-12 mb-24">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-8 border-b border-neutral-800 flex items-center">
                 <div className="order-1 md:order-0 flex flex-col justify-center">
-                    <span className="text-neutral-300 mb-2 block">ACERCA DE</span>
+                    <span className="text-xs uppercase tracking-[0.35em] text-neutral-400">Acerca de</span>
 
                     <h1 className="font-italic text-5xl mb-4">Sobre Artem.</h1>
-                    <p className="text-lg mb-2">Artem es un proyecto personal creado por pasión por el arte, la programación y el aprendizaje.</p>
+                    <p className="text-lg mb-2 text-neutral-300">Artem es un proyecto personal creado por pasión por el arte, la programación y el aprendizaje.</p>
                     <p className="text-lg text-neutral-400">El objetivo de este sitio es acercar el arte a más personas, permitiendo explorar miles de obras increibles de forma simple, elegante e inspiradora. <br/>
                         Todas las obras e información provienen de la colección del Museo Metropolitano de Arte mediante su API pública.
                     </p>

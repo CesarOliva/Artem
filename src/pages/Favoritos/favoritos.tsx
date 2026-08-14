@@ -40,7 +40,7 @@ const Favoritos = () => {
         <main className="mx-auto flex max-w-6xl flex-col gap-8 px-8 md:justify-center mt-4 md:mt-12 mb-24">
             <div>
                 <h1 className="font-italic text-5xl mb-4">Mis favoritos.</h1>
-                <p className="text-lg">Todas las obras que has marcado como favoritas.</p>
+                <p className="text-lg text-neutral-300">Todas las obras que has marcado como favoritas.</p>
             </div>
 
             <div className="">
