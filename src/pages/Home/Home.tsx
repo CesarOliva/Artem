@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Featured } from "../../components/Featured";
+import { asset } from "../../utils/asset";
 import { getHighlights, getArtworksByClassification, getPublicDomainArtworks } from "../../../services/artApi";
 import { getFavoriteArtworks } from "../../../services/favorites";
 
@@ -39,7 +40,7 @@ const HomePage = () => {
 
                 <div className="order-0 md:order-1 col-span-8 md:col-span-5 w-full bg-neutral-900 h-80 group relative overflow-hidden rounded-2xl shadow-xl">
                     <img
-                        src='/Images/Destacada.webp'
+                        src={asset('Images/Destacada.webp')}
                         alt='Wheat Field with cypresses'
                         loading="lazy"
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"

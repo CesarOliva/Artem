@@ -6,6 +6,7 @@ import { getArtworkImageUrl } from "../../services/artApi";
 import type { Artwork } from "../../types/artwork";
 
 import { Card, SkeletonCard } from "./Card";
+import { asset } from "../utils/asset";
 
 type FeaturedProps = {
     title: string;
@@ -54,7 +55,7 @@ export const Featured = ( { title, fetchArtworks, link, reloadKey }: FeaturedPro
                     <Card
                         key={artwork.objectID} 
                         id={artwork.objectID}
-                        image={getArtworkImageUrl(artwork.primaryImageSmall) ?? "/Images/NotFound.webp"}
+                        image={getArtworkImageUrl(artwork.primaryImageSmall) ?? asset("Images/NotFound.webp")}
                         title={artwork.title}
                         author={artwork.artistDisplayName ?? "Artista Desconocido"}
                         year={artwork.objectDate ?? "Fecha Desconocida"}

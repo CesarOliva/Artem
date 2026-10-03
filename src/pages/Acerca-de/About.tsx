@@ -1,4 +1,5 @@
 import { BriefcaseBusiness, GitBranch, Globe, SquareArrowUpRight } from "lucide-react";
+import { asset } from "../../utils/asset";
 
 const About = () => {
     return (
@@ -21,7 +22,7 @@ const About = () => {
                 <div className="order-0 md:order-1 w-full bg-neutral-900 h-80 group rounded-2xl shadow-xl">
                     <div className="flex items-center h-full">
                         <img
-                            src='/Images/Destacada2.webp'
+                            src={asset('Images/Destacada2.webp')}
                             alt='Stary Night Over the Rhône by Vincent Van Gogh'
                             loading="lazy"
                             className="h-full w-full object-cover transition-transform duration-700 rounded-2xl"
@@ -35,23 +36,23 @@ const About = () => {
                     <p className="text-2xl font-italic text-center md:text-start mb-4">Tecnologías utilizadas:</p>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="flex items-center justify-center md:justify-start gap-2">
-                            <img loading="lazy" src="/react.svg" alt="React" className="size-8 object-contain"/>
+                            <img loading="lazy" src={asset("react.svg")} alt="React" className="size-8 object-contain"/>
                             <p className="text-lg font-semibold text-start">React</p>
                         </div>
                         <div className="flex items-center justify-center md:justify-start gap-2">
-                            <img loading="lazy" src="/typescript.svg" alt="TypeScript" className="size-8 object-contain"/>
+                            <img loading="lazy" src={asset("typescript.svg")} alt="TypeScript" className="size-8 object-contain"/>
                             <p className="text-lg font-semibold text-start">TypeScript</p>
                         </div>
                         <div className="flex items-center justify-center md:justify-start gap-2">
-                            <img loading="lazy" src="/vite.svg" alt="Vite" className="size-8 object-contain"/>
+                            <img loading="lazy" src={asset("vite.svg")} alt="Vite" className="size-8 object-contain"/>
                             <p className="text-lg font-semibold text-start">Vite</p>
                         </div>
                         <div className="flex items-center justify-center md:justify-start gap-2">
-                            <img loading="lazy" src="/tailwind.svg" alt="Tailwind CSS" className="size-8 object-contain"/>
+                            <img loading="lazy" src={asset("tailwind.svg")} alt="Tailwind CSS" className="size-8 object-contain"/>
                             <p className="text-lg font-semibold text-start">Tailwind CSS</p>
                         </div>
                         <div className="flex items-center justify-center md:justify-start gap-2">
-                            <img loading="lazy" src="/react-router.svg" alt="React Router" className="size-8 object-contain"/>
+                            <img loading="lazy" src={asset("react-router.svg")} alt="React Router" className="size-8 object-contain"/>
                             <p className="text-lg font-semibold text-start">React Router</p>
                         </div>
                     </div>

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight, Heart } from "lucide-react";
 import { Card } from "../../components/Card";
 import { Link } from "react-router-dom";
+import { asset } from "../../utils/asset";
 
 const Favoritos = () => {
     const [artworks, setArtworks] = useState<Artwork[]>([]);
@@ -49,7 +50,7 @@ const Favoritos = () => {
                         <Card
                             key={artwork.objectID}
                             id={artwork.objectID}
-                            image={artwork.primaryImageSmall ?? "/Images/NotFound.webp"}
+                            image={artwork.primaryImageSmall ?? asset("Images/NotFound.webp")}
                             title={artwork.title}
                             author={artwork.artistDisplayName ?? "Artista Desconocido"}
                             year={artwork.objectDate ?? "Fecha Desconocida"}

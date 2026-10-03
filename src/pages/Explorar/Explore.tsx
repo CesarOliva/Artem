@@ -4,6 +4,7 @@ import { ChevronDown, ChevronLeft, ChevronRight, RotateCcw, Search, X } from "lu
 import { Card, SkeletonCard } from "../../components/Card";
 import { searchArtworksWithFilters } from "../../../services/artApi";
 import type { CardType } from "../../../types/card";
+import { asset } from "../../utils/asset";
 
 const CATEGORIES = ["Pintura", "Escultura", "Fotografía", "Dibujo / Acuarela", "Artes decorativas"];
 const SORTS = [
@@ -59,7 +60,7 @@ const Explore = () => {
 
                 const nextArtworks = result.artworks.map((artwork) => ({
                     id: artwork.objectID,
-                    image: artwork.primaryImageSmall || artwork.primaryImage || "/Images/NotFound.webp",
+                    image: artwork.primaryImageSmall || artwork.primaryImage || asset("Images/NotFound.webp"),
                     title: artwork.title,
                     author: artwork.artistDisplayName || "Autor desconocido",
                     year: artwork.objectDate || "Fecha desconocida",

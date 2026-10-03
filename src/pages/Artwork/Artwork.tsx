@@ -11,6 +11,7 @@ import type { CardType } from "../../../types/card";
 
 import NotFound from "../../components/Error";
 import { Featured, SkeletonFeatured } from "../../components/Featured";
+import { asset } from "../../utils/asset";
 
 
 export default function ArtworkPage() {
@@ -28,7 +29,7 @@ export default function ArtworkPage() {
     const favoriteArtwork: CardType | null = artwork
         ? {
             id: artwork.objectID,
-            image: getArtworkImageUrl(artwork.primaryImageSmall) ?? "/Images/NotFound.webp",
+            image: getArtworkImageUrl(artwork.primaryImageSmall) ?? asset("Images/NotFound.webp"),
             title: artwork.title,
             author: artwork.artistDisplayName ?? "Artista Desconocido",
             year: artwork.objectDate ?? "Fecha Desconocida",
@@ -177,7 +178,7 @@ export default function ArtworkPage() {
                         </div>
                     ) : (
                         <img
-                            src="/Images/NotFound.webp"
+                            src={asset("Images/NotFound.webp")}
                             alt="Imagen no disponible"
                             className="bg-neutral-900 w-full rounded-2xl object-cover"
                         />
