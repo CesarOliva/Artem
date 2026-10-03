@@ -1,6 +1,6 @@
 import type { Artwork } from "../types/artwork";
 
-const API_BASE = "https://collectionapi.metmuseum.org/public/collection/v1";
+const API_BASE = "https://collectionapi.metmuseum.org/public/collection/v1.1";
 
 // Simple in-memory cache with TTL
 const CACHE_TTL_MS = 1000 * 60 * 5;
